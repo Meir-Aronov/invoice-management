@@ -8,7 +8,6 @@ function App() {
   return (
     <Router>
       <div className="flex h-screen">
-        {/* תפריט צדדי */}
         <div className="w-1/5 bg-[#bccad6] p-4">
           <h1 className="text-xl font-bold mb-4">Menu</h1>
           <ul>
@@ -17,8 +16,6 @@ function App() {
             <li><Link to="/data-table">Data Table</Link></li>
           </ul>
         </div>
-
-        {/* תוכן מרכזי */}
         <div className="w-4/5 p-4">
           <Routes>
             <Route path="/" element={<UploadPage />} />

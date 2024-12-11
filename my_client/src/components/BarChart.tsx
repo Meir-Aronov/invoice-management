@@ -3,22 +3,13 @@ import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  PointElement,
   BarElement,
   Title,
   Tooltip,
   Legend,
 } from "chart.js";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 type MonthlySummaryItem = {
   month: string;
@@ -31,21 +22,26 @@ type MonthlyBarChartProps = {
 };
 
 export default function BarChart({ data }: MonthlyBarChartProps) {
+  if (data.length === 0) {
+    return <p className="text-center text-red-500 my-64">No data available to display the chart.</p>;
+  }
   const barData = {
-    labels: data.map((item) => `${item.month}/${item.year}`),
+    labels: data.map(({ month, year }) => `${month}/${year}`),
     datasets: [
       {
         label: "Total Invoice Amount",
-        data: data.map((item) => parseFloat(item.total_amount)),
-        backgroundColor: "#8d9db6",
-        borderWidth: 1,
+        data: data.map(({ total_amount }) => parseFloat(total_amount)),
+        backgroundColor: ["#bccad6", "#8d9db6", "#667292", "#f1e3dd"],
+        borderWidth: 5,
       },
     ],
   };
+
   return (
-    <div>
-      <h2 className="flex p-11 justify-center text-[#667292] " >Monthly Invoice Summary</h2>
+    <div className="p-11">
+      <h2 className="text-center text-[#667292] mb-8">Monthly Invoice Summary</h2>
       <Bar data={barData} />
     </div>
   );
 }
+

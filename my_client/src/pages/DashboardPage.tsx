@@ -1,76 +1,141 @@
-import { useEffect, useState } from "react";
+
+import { useEffect, useState, useMemo } from "react";
 import PieChart from "../components/PieChart";
 import LineChart from "../components/LineChart";
 import BarChart from "../components/BarChart";
-import axios from "axios";
 import HorizontalBarChart from "../components/HorizontalBarChart";
+import axios from "axios";
 import { buttonStyle } from "../styles/savedStyles";
+
+type AggregatedStatusData = {
+  invoice_status: string;
+  total_amount: string;
+}
+
+type OverdueInvoice = {
+  overdue_count: string;
+  details: {
+    invoice_original_id: string;
+    invoice_due_date: string;
+    invoice_cost: string;
+    invoice_currency: string;
+  }[];
+}
+
+type MonthlySummaryData = {
+  month: string;
+  year: string;
+  total_amount: string;
+}
+
+type AggregatedByCompanyData = {
+  supplier_company_name: string;
+  total_cost_ils: string;
+}
 
 export default function DashboardPage() {
   const [currentGraph, setCurrentGraph] = useState(0);
-
-  const [aggregatedData, setAggregatedData] = useState([]);
-  const [overdueTrend, setOverdueTrend] = useState([]);
-  const [monthlySummary, setMonthlySummary] = useState([]);
-  const [nameByCompany, setByCompany] = useState([]);
+  const [aggregatedData, setAggregatedData] = useState<AggregatedStatusData[]>([]);
+  const [overdueTrend, setOverdueTrend] = useState<OverdueInvoice[]>([]);
+  const [monthlySummary, setMonthlySummary] = useState<MonthlySummaryData[]>([]);
+  const [nameByCompany, setByCompany] = useState<AggregatedByCompanyData[]>([]);
 
   const [companyName, setCompanyName] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleCustomerSelect = (customerName: string) => {
     setCompanyName(customerName);
   };
 
-  // Fetch data from the server
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [aggregatedRes, overdueRes, monthlyRes, byCompany] = await Promise.all([
-          axios.get("http://localhost:3010/invoices/aggregated-by-status"),
-          axios.get("http://localhost:3010/invoices/overdue-invoices"),
-          axios.get("http://localhost:3010/invoices/monthly-summary"),
-          axios.get("http://localhost:3010/invoices/aggregated-by-company_name", { params: {name: companyName}}),
-        ]);
+  const fetchAggregatedData = async () => {
+    const response = await axios.get<AggregatedStatusData[]>("http://localhost:3010/invoices/aggregated-by-status");
+    setAggregatedData(response.data);
+  };
 
-        setAggregatedData(aggregatedRes.data);
-        setOverdueTrend(overdueRes.data);
-        setMonthlySummary(monthlyRes.data);
-        setByCompany(byCompany.data)
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+  const fetchOverdueTrend = async () => {
+    const response = await axios.get<OverdueInvoice[]>("http://localhost:3010/invoices/overdue-invoices");
+    setOverdueTrend(response.data);
+  };
+
+  const fetchMonthlySummary = async () => {
+    const response = await axios.get<MonthlySummaryData[]>("http://localhost:3010/invoices/monthly-summary");
+    setMonthlySummary(response.data);
+  };
+
+  const fetchByCompany = async (name: string) => {
+    const response = await axios.get<AggregatedByCompanyData[]>("http://localhost:3010/invoices/aggregated-by-company_name", {
+      params: { name },
+    });
+    setByCompany(response.data);
+  };
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      await Promise.all([
+        fetchAggregatedData(),
+        fetchOverdueTrend(),
+        fetchMonthlySummary(),
+        fetchByCompany(companyName),
+      ]);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      alert("Failed to fetch data. The data you entered appears to be incorrect.")
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, [companyName]);
 
-  const graphs = [
-    <PieChart data={aggregatedData} />,
-    <LineChart data={overdueTrend} />,
+  const processedAggregatedData: AggregatedStatusData[] = useMemo(() => 
+    aggregatedData.map(item => ({
+      invoice_status: item.invoice_status,
+      total_amount: item.total_amount,
+    })), 
+    [aggregatedData]
+  );
+
+  const processedOverdueData: OverdueInvoice[] = useMemo(() => 
+    overdueTrend.map(item => ({
+      overdue_count: item.overdue_count,
+      details: item.details.map(detail => ({
+        invoice_original_id: detail.invoice_original_id,
+        invoice_due_date: detail.invoice_due_date,
+        invoice_cost: detail.invoice_cost,
+        invoice_currency: detail.invoice_currency,
+      })),
+    })), 
+    [overdueTrend]
+  );
+  
+  const graphs = useMemo(() => [
+    <PieChart data={processedAggregatedData} />,
+    <LineChart data={processedOverdueData} />,
     <BarChart data={monthlySummary} />,
-    <HorizontalBarChart data={nameByCompany} onCustomerSelect={handleCustomerSelect}/>,
-  ];
+    <HorizontalBarChart data={nameByCompany} onCustomerSelect={handleCustomerSelect} />,
+  ], [processedAggregatedData, processedOverdueData, monthlySummary, nameByCompany]);
 
   const nextGraph = () => setCurrentGraph((prev) => (prev + 1) % graphs.length);
-  const prevGraph = () =>
-    setCurrentGraph((prev) => (prev - 1 + graphs.length) % graphs.length);
+  const prevGraph = () => setCurrentGraph((prev) => (prev - 1 + graphs.length) % graphs.length);
+
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-      <div className="flex items-center justify-between">
-        <button
-          className={buttonStyle}
-          onClick={prevGraph}
-        >
-          ⬅
-        </button>
-        <div className="w-4/5">{graphs[currentGraph]}</div>
-        <button
-          className={buttonStyle}
-          onClick={nextGraph}
-        >
-          ➡
-        </button>
-      </div>
+      {loading && <div>Loading data...</div>}
+      {!loading && (
+        <div className="flex items-center justify-between">
+          <button className={buttonStyle} onClick={prevGraph}>
+            ⬅
+          </button>
+          <div className="w-4/5">{graphs[currentGraph]}</div>
+          <button className={buttonStyle} onClick={nextGraph}>
+            ➡
+          </button>
+        </div>
+      )}
     </div>
   );
 }
-
