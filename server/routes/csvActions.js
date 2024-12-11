@@ -6,10 +6,9 @@ const multer = require('multer');
 const csv = require('csv-parser');
 const fs = require('fs');
 
-// הגדרת Multer לשמירת קבצים זמנית
+// setting up Multer to save files temporarily
 const upload = multer({ dest: 'uploads/' });
 
-// Endpoint להעלאת קובץ CSV
 router.post('/upload-csv', upload.single('file'), (req, res) => {
     const filePath = req.file.path;
     const suppliers = [];
@@ -18,7 +17,7 @@ router.post('/upload-csv', upload.single('file'), (req, res) => {
     fs.createReadStream(filePath)
       .pipe(csv())
       .on('data', (row) => {
-        // עיבוד הנתונים לכל שורה
+        // processing the data for each row
         suppliers.push({
           supplier_internal_id: row.supplier_internal_id,
           supplier_external_id: row.supplier_external_id,
@@ -43,13 +42,13 @@ router.post('/upload-csv', upload.single('file'), (req, res) => {
           invoice_cost: row.invoice_cost,
           invoice_currency: row.invoice_currency,
           invoice_status: row.invoice_status,
-          supplier_internal_id: row.supplier_internal_id, // יש צורך למצוא את הקשר לספק
-          invoice_original_id: row.invoice_id, ////////////////////////////
+          supplier_internal_id: row.supplier_internal_id,
+          invoice_original_id: row.invoice_id,
         });
       })
       .on('end', async () => {
         try {
-          // שמירת ספקים
+          // supplier retention
           for (const supplier of suppliers) {
             await db.query(
               `INSERT INTO suppliers (supplier_internal_id, supplier_external_id, supplier_company_name, 
@@ -61,7 +60,7 @@ router.post('/upload-csv', upload.single('file'), (req, res) => {
             );
           }
   
-          // שמירת חשבוניות
+          // saving invoices
           for (const invoice of invoices) {
             const supplier = await db.query(
               'SELECT supplier_id FROM suppliers WHERE supplier_internal_id = $1',
@@ -89,7 +88,7 @@ router.post('/upload-csv', upload.single('file'), (req, res) => {
           console.error(error);
           res.status(500).json({ error: 'Error processing file' });
         } finally {
-          fs.unlinkSync(filePath); // מחיקת הקובץ לאחר עיבוד
+          fs.unlinkSync(filePath); // delete the file after processing
         }
       });
   });

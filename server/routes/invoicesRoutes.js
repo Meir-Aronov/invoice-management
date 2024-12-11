@@ -19,7 +19,7 @@ router.get("/getAll", async (req, res) => {
   }
 });
 
-// Returns the accumulated amount according to each status
+// returns the accumulated amount according to each status
 router.get("/aggregated-by-status", async (req, res) => {
   try {
     // in this query we returning the status, cost and currency of each invoice
@@ -45,7 +45,7 @@ router.get("/aggregated-by-status", async (req, res) => {
       aggregatedData[invoice.invoice_status] += costInShekel;
     });
 
-    //Converts the aggregatedData object to an array of [key, value] pairs
+    //converts the aggregatedData object to an array of [key, value] pairs
     //key (status) and value (aggregated amount)
     res.json(
       Object.entries(aggregatedData).map(([status, totalAmount]) => ({
@@ -59,7 +59,7 @@ router.get("/aggregated-by-status", async (req, res) => {
   }
 });
 
-// // Counts how many invoices are overdue
+// // counts how many invoices are overdue
 router.get("/overdue-invoices", async (req, res) => {
   try {
     const result = await db.query(`
@@ -74,12 +74,12 @@ router.get("/overdue-invoices", async (req, res) => {
       FROM overdue_details;
     `);
 
-    // המרת סכומים לשקלים
+    // convert amounts to shekels
     const transformedDetails = result.rows[0].details.map((invoice) => {
-      const rate = exchangeRates[invoice.invoice_currency] || 1; // ברירת מחדל: 1
+      const rate = exchangeRates[invoice.invoice_currency] || 1;
       return {
         ...invoice,
-        invoice_cost: (invoice.invoice_cost * rate).toFixed(2), // המרה לשקלים ושמירה עם 2 ספרות אחרי הנקודה
+        invoice_cost: (invoice.invoice_cost * rate).toFixed(2), // convert to shekels and save with 2 digits after the point
       };
     });
 
@@ -95,7 +95,7 @@ router.get("/overdue-invoices", async (req, res) => {
   }
 });
 
-//Monthly summary of invoices
+//monthly summary of invoices
 router.get("/monthly-summary", async (req, res) => {
   try {
     const result = await db.query(`
@@ -143,7 +143,7 @@ router.get("/aggregated-by-company_name", async (req, res) => {
     let queryParams;
 
     if (name && name.trim() !== "") {
-      // אם נשלח שם חברה
+      // If they sent a company name
       query = `
         SELECT 
           s.supplier_company_name, 
@@ -155,7 +155,7 @@ router.get("/aggregated-by-company_name", async (req, res) => {
       `;
       queryParams = [name];
     } else {
-      // אם השם ריק - שלוף הכל
+      // If the name is empty - retrieve everything
       query = `
         SELECT 
           s.supplier_company_name, 
@@ -174,10 +174,10 @@ router.get("/aggregated-by-company_name", async (req, res) => {
         .json({ error: "No invoices found for the given company" });
     }
 
-    // עיבוד הנתונים לחישוב סך הכל לשקלים
+    // processing the data to calculate the total in shekels
     const results = {};
     rows.forEach((invoice) => {
-      const rate = exchangeRates[invoice.invoice_currency] || 1; // ברירת מחדל לשקל
+      const rate = exchangeRates[invoice.invoice_currency] || 1; // the default is shekel
       const costInILS = invoice.invoice_cost * rate;
 
       if (!results[invoice.supplier_company_name]) {
@@ -186,7 +186,7 @@ router.get("/aggregated-by-company_name", async (req, res) => {
       results[invoice.supplier_company_name] += costInILS;
     });
 
-    // החזרת התוצאות בפורמט נוח
+    // returning results in a convenient format
     const response = Object.entries(results).map(([company, total]) => ({
       supplier_company_name: company,
       total_cost_ils: total,

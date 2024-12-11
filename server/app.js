@@ -1,19 +1,18 @@
 const express = require('express');
-const db = require('./db'); // חיבור למסד הנתונים
 const cors = require('cors');
 
 const app = express();
 app.use(cors());
 
-// חיבור לרוטות
+//connecting to routes
 const csvActionsRoutes = require('./routes/csvActions');
 const invoicesRoutes = require('./routes/invoicesRoutes');
 const suppliersRoutes = require('./routes/suppliersRoutes');
 
-app.use(express.json()); // תמיכה ב-JSON
-app.use(express.urlencoded({ extended: true })); // תמיכה ב-URL Encoded
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); //encoded URL support
 
-// הגדרת ה-routes
+// setting the routes
 app.use('/csv', csvActionsRoutes);
 app.use('/invoices', invoicesRoutes);
 app.use('/suppliers', suppliersRoutes);
