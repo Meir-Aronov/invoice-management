@@ -1,6 +1,6 @@
 # Invoice Management
 
-A project for managing invoices received by companies from suppliers. The system allows uploading, updating, and managing invoices from multiple suppliers, with a visual display of the data.
+A project for managing invoices received by companies from suppliers. The system allows uploading and managing invoices from multiple suppliers, with a visual display of the data.
 
 ## Technologies
 The project uses the following technologies and libraries:
