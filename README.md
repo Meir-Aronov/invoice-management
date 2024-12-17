@@ -27,6 +27,7 @@ Before running the project, you need to install the following requirements:
 - React-router-dom
 - react-chartjs-2
 - Chart.js
+- chartjs-adapter-date-fns
 
 ### Installation
 1. **Install back-end dependencies**:

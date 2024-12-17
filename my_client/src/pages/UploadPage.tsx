@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { buttonStyle } from "../styles/savedStyles";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -9,9 +9,9 @@ export default function UploadPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      const selectedFile = event.target.files[0];
+      const selectedFile = event.target.files[0]; //there is just one file
       if (selectedFile.size > MAX_FILE_SIZE) {
         setError("File is too large. Maximum size is 10MB.");
         return;
@@ -19,9 +19,9 @@ export default function UploadPage() {
       setFile(selectedFile);
       setError(null); // Reset error when a new file is selected
     }
-  }, []);
+  };
 
-  const handleUpload = useCallback(async () => {
+  const handleUpload = async () => {
     if (!file) {
       setError("No file selected!");
       return;
@@ -33,7 +33,7 @@ export default function UploadPage() {
 
     try {
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", file); //adds the selected file to the information being sent
 
       const response = await fetch("http://localhost:3010/csv/upload-csv", {
         method: "POST",
@@ -44,8 +44,8 @@ export default function UploadPage() {
         setSuccess(true);
         console.log("File uploaded successfully!");
       } else {
-        const errorData = await response.json(); // קרא את הודעת השגיאה מהשרת
-        const errorMessage = errorData.error || "Unknown error occurred."; // וודא שיש fallback
+        const errorData = await response.json(); // read the error message from the server
+        const errorMessage = errorData.error || "Unknown error occurred."; // make sure there is a fallback
         setError(`Upload failed: ${errorMessage}`);
         console.error("Error uploading file:", errorMessage);
       }
@@ -55,7 +55,7 @@ export default function UploadPage() {
     } finally {
       setUploading(false);
     }
-  }, [file]);
+  };
 
   return (
     <div>
@@ -68,7 +68,9 @@ export default function UploadPage() {
           onChange={handleFileChange}
         />
         {uploading && <p>Uploading...</p>}
-        {success && <p className="text-green-500">File uploaded successfully!</p>}
+        {success && (
+          <p className="text-green-500">File uploaded successfully!</p>
+        )}
         {error && <p className="text-red-500">{error}</p>}
         <button
           className={`${buttonStyle} mt-24`}
@@ -81,74 +83,3 @@ export default function UploadPage() {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import { useState } from "react";
-// import { buttonStyle } from "../styles/savedStyles";
-
-// export default function UploadPage() {
-//   const [file, setFile] = useState<File | null>(null);
-
-//   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-//     if (event.target.files) {
-//       setFile(event.target.files[0]);
-//     }
-//   };
-
-//   const handleUpload = async () => {
-//     if (file) {
-//       console.log("Uploading:", file.name);
-
-//       // יצירת אובייקט FormData
-//       const formData = new FormData();
-//       formData.append("file", file);
-
-//       try {
-//         // שליחת הבקשה לשרת
-//         const response = await fetch("http://localhost:3010/csv/upload-csv", {
-//           method: "POST",
-//           body: formData,
-//         });
-
-//         if (response.ok) {
-//           console.log("File uploaded successfully!");
-//         } else {
-//           console.error("Error uploading file:", response.statusText);
-//         }
-//       } catch (error) {
-//         console.error("Error uploading file:", error);
-//       }
-//     }
-//   };
-//   return (
-//     <div>
-//       <h1 className="text-2xl font-bold mb-4">Upload CSV</h1>
-//       <div className="border-4 border-[#f1e3dd] rounded-[100px] bg-[#bccad6] w-2/4 h-72 py-20 px-10 mx-auto my-28 flex flex-col items-center justify-center space-y-10">
-//         <input className="ml-12" type="file" accept=".csv" onChange={handleFileChange} />
-//         <button
-//           className={`${buttonStyle} mt-24`}
-//           onClick={handleUpload}
-//           disabled={!file}
-//         >
-//           Upload
-//         </button>
-//       </div>
-//     </div>
-//   );
-// }

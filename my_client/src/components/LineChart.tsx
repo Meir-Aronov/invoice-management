@@ -43,7 +43,7 @@ export default function LineChart({ data }: OverdueLineChartProps) {
   const sortedData = data[0].details.map((item) => ({
     ...item,
     invoice_due_date: new Date(item.invoice_due_date),
-  })).sort((a, b) => a.invoice_due_date.getTime() - b.invoice_due_date.getTime());
+  })).sort((a, b) => a.invoice_due_date.getTime() - b.invoice_due_date.getTime()); //sort() sorts the array by payment date
 
   //Filter the data to include only those within the date range
   const filteredData = sortedData.filter(

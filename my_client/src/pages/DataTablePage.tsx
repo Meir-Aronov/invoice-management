@@ -26,6 +26,9 @@ export default function DataTablePage() {
       }
     };
 
+    
+    //executes both calls (Invoices + Suppliers) in parallel
+    // when both complete (either succeed or fail) ends the loading state
     Promise.all([fetchInvoices(), fetchSuppliers()]).finally(() => {
       setLoading(false); // Marks the end of charging
     });

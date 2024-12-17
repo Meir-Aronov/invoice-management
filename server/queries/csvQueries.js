@@ -21,7 +21,7 @@ const insertSupplier = async (supplier) => {
         `Supplier Internal ID "${supplier.supplier_internal_id}" must be unique.`
       );
     }
-    throw error; // שגיאה כללית אחרת
+    throw error; 
   }
 };
 

@@ -1,4 +1,4 @@
-const fs = require("fs"); 
+const fs = require("fs"); //for files actions
 const csv = require("csv-parser"); //to read and parse the lines of a CSV file
 const {
   insertSupplier,

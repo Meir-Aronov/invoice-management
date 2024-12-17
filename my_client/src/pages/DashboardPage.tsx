@@ -34,7 +34,7 @@ type AggregatedByCompanyData = {
 }
 
 export default function DashboardPage() {
-  const [currentGraph, setCurrentGraph] = useState(0);
+  const [currentGraph, setCurrentGraph] = useState(0);  //represents the current graph number
   const [aggregatedData, setAggregatedData] = useState<AggregatedStatusData[]>([]);
   const [overdueTrend, setOverdueTrend] = useState<OverdueInvoice[]>([]);
   const [monthlySummary, setMonthlySummary] = useState<MonthlySummaryData[]>([]);
@@ -43,7 +43,7 @@ export default function DashboardPage() {
   const [companyName, setCompanyName] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleCustomerSelect = (customerName: string) => {
+  const handleNameSelect = (customerName: string) => {
     setCompanyName(customerName);
   };
 
@@ -90,6 +90,7 @@ export default function DashboardPage() {
     fetchData();
   }, [companyName]);
 
+  //the useMemo ensures that processing is only performed if the data changes
   const processedAggregatedData: AggregatedStatusData[] = useMemo(() => 
     aggregatedData.map(item => ({
       invoice_status: item.invoice_status,
@@ -110,13 +111,30 @@ export default function DashboardPage() {
     })), 
     [overdueTrend]
   );
+
+  const processedMonthlySummary: MonthlySummaryData[] = useMemo(() =>
+    monthlySummary.map(item => ({
+      month: item.month,
+      year: item.year,
+      total_amount: item.total_amount,
+    })),
+    [monthlySummary]
+  );
+
+  const processedNameByCompany: AggregatedByCompanyData[] = useMemo(() =>
+    nameByCompany.map(item => ({
+      supplier_company_name: item.supplier_company_name,
+      total_cost_ils: item.total_cost_ils,
+    })),
+    [nameByCompany]
+  );  
   
   const graphs = useMemo(() => [
     <PieChart data={processedAggregatedData} />,
     <LineChart data={processedOverdueData} />,
-    <BarChart data={monthlySummary} />,
-    <HorizontalBarChart data={nameByCompany} onCustomerSelect={handleCustomerSelect} />,
-  ], [processedAggregatedData, processedOverdueData, monthlySummary, nameByCompany]);
+    <BarChart data={processedMonthlySummary} />,
+    <HorizontalBarChart data={processedNameByCompany} onNameSelect={handleNameSelect} />,
+  ], [processedAggregatedData, processedOverdueData, processedMonthlySummary, processedNameByCompany]);
 
   const nextGraph = () => setCurrentGraph((prev) => (prev + 1) % graphs.length);
   const prevGraph = () => setCurrentGraph((prev) => (prev - 1 + graphs.length) % graphs.length);

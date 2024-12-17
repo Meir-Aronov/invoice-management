@@ -21,18 +21,18 @@ type MonthlySummaryItem = {
 
 type MonthlyBarChartProps = {
   data: MonthlySummaryItem[];
-  onCustomerSelect: (customerName: string) => void;
+  onNameSelect: (customerName: string) => void;
 };
 
-export default function HorizontalBarChart({data, onCustomerSelect}: MonthlyBarChartProps) {
+export default function HorizontalBarChart({data, onNameSelect}: MonthlyBarChartProps) {
   if (data.length === 0) {
     return <p className="text-center text-red-500 my-64">No data available to display the chart.</p>;
   }
   const [supplierCompanyName, setSupplierCompanyName] = useState("");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    onCustomerSelect(supplierCompanyName);
+    e.preventDefault();  //just in case....
+    onNameSelect(supplierCompanyName);
   };
 
   const barData = {
