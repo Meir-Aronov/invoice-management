@@ -1,5 +1,4 @@
 # Invoice Management
-
 A project for managing invoices received by companies from suppliers. The system allows uploading and managing invoices from multiple suppliers, with a visual display of the data.
 
 ## Technologies
@@ -22,7 +21,7 @@ The project uses the following technologies and libraries:
 Before running the project, you need to install the following requirements:
 - Node.js (version 14 or higher)
 - NPM (for managing packages)
-- PostgreSQL + pgAdmin
+- PostgreSQL (+ pgAdmin)
 - Multer
 - CSV-Parser
 - React-router-dom
@@ -42,7 +41,7 @@ Before running the project, you need to install the following requirements:
        ```sql
        CREATE TABLE suppliers (
            supplier_id SERIAL PRIMARY KEY,
-           supplier_internal_id VARCHAR(50),
+           supplier_internal_id VARCHAR(50) UNIQUE NOT NULL,
            supplier_external_id VARCHAR(50),
            supplier_company_name VARCHAR(255),
            supplier_address VARCHAR(255),
@@ -71,36 +70,29 @@ Before running the project, you need to install the following requirements:
        ```
 
 2. **Update DB credentials in `db.js`**:
-   Update the `db.js` file with your database username and password (for example, `user: ahmr`).
+   Update the `db.js` file with your database username and password (for example, `user: andrew`).
 
 3. **Run the server**:
    - Navigate to the server directory:
-     ```bash
      cd server
-     ```
+
    - Run the server:
-     ```bash
      node app.js
-     ```
 
 4. **Install front-end dependencies**:
    - Navigate to the client directory:
-     ```bash
      cd my_client
-     ```
+
    - Install dependencies:
-     ```bash
      npm install
-     ```
 
 5. **Run the client**:
    - Start the client:
-     ```bash
      npm run dev
-     ```
 
 ## Uploading CSV Files
-CSV files with supplier and invoice data need to be uploaded to the site. A sample CSV file will be provided inside the invoice-managment file named `invoices.csv`
+CSV files with supplier and invoice data need to be uploaded to the site. A sample CSV file will be provided inside the invoice-managment file named `invoices2.csv`.
+Please note, unique values ​​must be given in supplier_internal_id.
 
 ## Contributions
 If you'd like to contribute to the project, feel free to submit a Pull Request or open an Issue with suggestions for improvements.

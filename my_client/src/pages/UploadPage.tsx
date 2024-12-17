@@ -44,8 +44,10 @@ export default function UploadPage() {
         setSuccess(true);
         console.log("File uploaded successfully!");
       } else {
-        setError(`Upload failed: ${response.statusText}`);
-        console.error("Error uploading file:", response.statusText);
+        const errorData = await response.json(); // קרא את הודעת השגיאה מהשרת
+        const errorMessage = errorData.error || "Unknown error occurred."; // וודא שיש fallback
+        setError(`Upload failed: ${errorMessage}`);
+        console.error("Error uploading file:", errorMessage);
       }
     } catch (error) {
       setError(`Error uploading file: ${error}`);

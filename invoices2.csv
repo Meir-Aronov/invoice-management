@@ -1,4 +1,4 @@
 invoice_id,invoice_date,invoice_due_date,invoice_cost,invoice_currency,invoice_status,supplier_internal_id,supplier_external_id,supplier_company_name,supplier_address,supplier_city,supplier_country,supplier_contact_name,supplier_phone,supplier_email,supplier_bank_code,supplier_bank_branch_code,supplier_bank_account_number,supplier_status,supplier_stock_value,supplier_withholding_tax
-INV001,01/02/2024,15/10/2023,6400,USD,PAID,SUPP001,EXT000111,Supplier 1 Inc.,123 Main St,New York,US,Moshe Zvolon,555-1234,supplier1@example.com,31,1,12345678,ACTIVE,5000,10
-INV002,05/12/2024,01/03/2025,1233,EUR,CONFIRMED,SUPP002,EXT000222,Supplier 2 LLC,456 Side Rd,Paris,FR,Itay Bandosh,555-5678,supplier2@example.com,31,2,87654321,INACTIVE,7500,15
-INV003,10/12/2024,02/02/2024,44000,USD,CONFIRMED,SUPP003,EXT000333,Supplier 3 Ltd.,789 Another St,London,GB,LILI Avraham,555-9876,supplier3@example.com,31,3,11223344,INACTIVE,6200,12.5
+INV001,01/02/2023,15/10/2021,9534,USD,CONFIRMED,SUPP007,EXT000111,Supplier 2 Inc.,123 Main St,New York,US,Moshe Zvolon,555-1234,supplier1@example.com,31,1,12345678,ACTIVE,5000,10
+INV002,05/12/2024,01/01/2024,4121,EUR,CANCELED,SUPP008,EXT000222,Supplier 4 LLC,456 Side Rd,Paris,FR,Itay Bandosh,555-5678,supplier2@example.com,31,2,87654321,INACTIVE,7500,15
+INV003,10/12/2024,02/05/2020,2111,USD,CONFIRMED,SUPP009,EXT000333,Supplier 8 Ltd.,789 Another St,London,GB,LILI Avraham,555-9876,supplier3@example.com,31,3,11223344,INACTIVE,6200,12.5
