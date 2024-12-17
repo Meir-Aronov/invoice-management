@@ -74,21 +74,29 @@ Before running the project, you need to install the following requirements:
 
 3. **Run the server**:
    - Navigate to the server directory:
+     ```bash
      cd server
-
+     ```
    - Run the server:
+     ```bash
      node app.js
+     ```
 
 4. **Install front-end dependencies**:
    - Navigate to the client directory:
+     ```bash
      cd my_client
-
+     ```
    - Install dependencies:
+     ```bash
      npm install
+     ```
 
 5. **Run the client**:
    - Start the client:
+     ```bash
      npm run dev
+     ```
 
 ## Uploading CSV Files
 CSV files with supplier and invoice data need to be uploaded to the site. A sample CSV file will be provided inside the invoice-managment file named `invoices2.csv`.
